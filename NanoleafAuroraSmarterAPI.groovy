@@ -191,12 +191,12 @@ private getCallBackAddress() {
 
 private createPutRequest(String url, String body) {
 
-	log.debug("/api/beta/${apiKey}/${url}")
+	log.debug("/api/v1/${apiKey}/${url}")
     log.debug("body : ${body}")
     
     def result = new physicalgraph.device.HubAction(
             method: "PUT",
-            path: "/api/beta/${apiKey}/${url}",
+            path: "/api/v1/${apiKey}/${url}",
             body: body,
             headers: [
                 HOST: getHostAddress()
@@ -208,11 +208,11 @@ private createPutRequest(String url, String body) {
 
 private createGetRequest(String url) {
 
-	//log.debug("/api/beta/${apiKey}/${url}")
+	//log.debug("/api/v1/${apiKey}/${url}")
     
     def result = new physicalgraph.device.HubAction(
             method: "GET",
-            path: "/api/beta/${apiKey}/${url}",
+            path: "/api/v1/${apiKey}/${url}",
             headers: [
                 HOST: getHostAddress()
             ]
