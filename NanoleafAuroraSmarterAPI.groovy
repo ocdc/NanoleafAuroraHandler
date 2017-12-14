@@ -103,7 +103,7 @@ def parse(String description) {
          sendEvent(name: "level", value: currentBrightness, isStateChange: true)
       }
       
-      def effectsList = message.json.effects.list
+      def effectsList = message.json.effects.effectsList
             
       if(effectsList.toString() != device.currentValue("scenesList").toString()) {
          log.debug("List of effects was changed in the Aurora App")
