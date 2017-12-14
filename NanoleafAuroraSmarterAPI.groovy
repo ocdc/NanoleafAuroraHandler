@@ -38,7 +38,7 @@ metadata {
 
 		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, decoration: "flat", canChangeIcon: true){
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
-				attributeState "on", label: 'on', action: "off", icon: "http://stevethegeek.net/smartthings/aurora/aurora-on.png", backgroundColor: "#79b821"
+				attributeState "on", label: 'on', action: "off", icon: "http://stevethegeek.net/smartthings/aurora/aurora-on.png", backgroundColor: "#00a0dc"
 				attributeState "off", label: 'off', action: "on", icon: "http://stevethegeek.net/smartthings/aurora/aurora-off.png", backgroundColor: "#ffffff"
 			}
             tileAttribute ("level", key: "SLIDER_CONTROL", range:"(1..100)") {
