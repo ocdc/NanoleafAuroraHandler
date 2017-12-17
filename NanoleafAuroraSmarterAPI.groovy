@@ -52,6 +52,18 @@ metadata {
             }
     }
 
+		standardTile("scene1", "scene", width: 2, height: 1, decoration: "flat") {
+        		state "default", label: 'Scene1', backgroundColor: "#ffffff", action: "scene1" 
+        	}
+        
+        	standardTile("scene2", "scene", width: 2, height: 1, decoration: "flat") {
+        		state "default", label: 'Scene2', backgroundColor: "#ffffff", action: "scene2" 
+		}
+		
+        	standardTile("scene3", "scene", width: 2, height: 1, decoration: "flat") {
+        		state "default", label: 'Scene3', backgroundColor: "#ffffff", action: "scene3" 
+        	}
+		
 		standardTile("previousScene", "scene", width: 1, height: 1, decoration: "flat") {
 			state "default", label: "", backgroundColor: "#ffffff", action: "previousScene", icon: "http://stevethegeek.net/smartthings/aurora/aurora-left.png"
 		} 
