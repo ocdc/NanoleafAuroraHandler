@@ -25,6 +25,9 @@ metadata {
         
         command "previousScene"
         command "nextScene"
+	command "scene1"
+        command "scene2"
+        command "scene3"	
             
         attribute "scene", "String"
         attribute "scenesList", "String"
@@ -72,6 +75,9 @@ metadata {
 
     preferences {
         input name: "apiKey", type: "text", title: "Aurora API Key", description: "Enter The Key Returned By The Api Authentication Method", required: true
+    	input name: "scene1", type: "text", title: "Favorite Scene 1", description: "Enter a Scene name", required: false
+        input name: "scene2", type: "text", title: "Favorite Scene 2", description: "Enter a Scene name", required: false
+        input name: "scene3", type: "text", title: "Favorite Scene 3", description: "Enter a Scene name", required: false    
     }
 
 }
@@ -172,6 +178,18 @@ def changeScene(String scene) {
     sendEvent(name: "scene", value: scene, isStateChange: true)
     return createPutRequest("effects", "{\"select\" : \"${scene}\"}")
 }
+
+def scene1() {
+	changeScene("${scene1}")
+}    
+
+def scene2() {
+	changeScene("${scene2}")
+} 
+
+def scene3() {
+	changeScene("${scene3}")
+} 
 
 def setLevel(Integer value) {
     sendEvent(name: "level", value: value, isStateChange: true)
