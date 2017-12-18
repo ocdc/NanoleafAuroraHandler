@@ -82,7 +82,7 @@ metadata {
         
         
 		main "switch"
-		details(["switch","previousScene","currentScene", "nextScene", "refresh"])
+		details(["switch","scene1",“scene2”,“scene3”,"previousScene","currentScene", "nextScene", "refresh"])
 	}
 
     preferences {
