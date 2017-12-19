@@ -25,9 +25,9 @@ metadata {
 		
 		command "previousScene"
 		command "nextScene"
-		command "scene1"
-		command "scene2"
-		command "scene3"	
+		command "setScene1"
+		command "setScene2"
+		command "setScene3"	
             
 		attribute "scene", "String"
 		attribute "scenesList", "String"
@@ -54,16 +54,16 @@ metadata {
 		}
 	}
 
-		standardTile("scene1", "scene", width: 2, height: 1, decoration: "flat") {
-        		state "default", label: 'Scene1', backgroundColor: "#ffffff", action: "scene1" 
+		standardTile("scene1", "scene1", width: 2, height: 1, decoration: "flat") {
+        		state "val", label: '${currentValue}', backgroundColor: "#ffffff", action: "setScene1" 
         	}
         
-        	standardTile("scene2", "scene", width: 2, height: 1, decoration: "flat") {
-        		state "default", label: 'Scene2', backgroundColor: "#ffffff", action: "scene2" 
+        	standardTile("scene2", "scene2", width: 2, height: 1, decoration: "flat") {
+        		state "val", label: '${currentValue}', backgroundColor: "#ffffff", action: "setScene2" 
 		}
 		
         	standardTile("scene3", "scene", width: 2, height: 1, decoration: "flat") {
-        		state "default", label: 'Scene3', backgroundColor: "#ffffff", action: "scene3" 
+        		state "val", label: '${currentValue}', backgroundColor: "#ffffff", action: "setScene3" 
         	}
 		
 		standardTile("previousScene", "scene", width: 1, height: 1, decoration: "flat") {
