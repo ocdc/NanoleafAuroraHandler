@@ -25,6 +25,7 @@ metadata {
 		
 		command "previousScene"
 		command "nextScene"
+		command "changeScene" //for CoRE access to scenes
 		command "setScene1"
 		command "setScene2"
 		command "setScene3"	
