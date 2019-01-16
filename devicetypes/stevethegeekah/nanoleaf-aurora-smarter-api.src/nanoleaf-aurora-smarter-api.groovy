@@ -247,6 +247,7 @@ def nextScene() {
 
 def changeScene(String scene) {
    	sendEvent(name: "scene", value: scene, isStateChange: true)
+    sendEvent(name: "switch", value: "on")
    	createPutRequest("effects", "{\"select\" : \"${scene}\"}")
 }
 
