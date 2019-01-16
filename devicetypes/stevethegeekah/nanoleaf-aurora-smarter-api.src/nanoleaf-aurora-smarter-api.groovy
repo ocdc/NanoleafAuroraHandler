@@ -143,9 +143,9 @@ def initialize() {
     else {
     	displayText = "No IP Address provided"
     }
-    log.debug "DISPLAY - ${displayText} ${device.currentValue("IPinfo")}"
 	sendEvent(name: "IPinfo", value: displayText)
-    log.debug "DISPLAY - ${displayText} ${device.currentValue("IPinfo")}"
+//	log.debug "DISPLAY - ${displayText} ${device.currentValue("IPinfo")}"
+
 	setKeyStatus()
 
 }
@@ -193,7 +193,7 @@ def parse(String description) {
 
 def setTimer() {
 	log.debug "TIMER SET"
-	runEvery5Minute(refresh)
+	runEvery5Minutes(refresh)
 
 }
 
@@ -304,7 +304,7 @@ private createGetRequest(String url) {
 
     def setKey = setAPIkey()
 	//log.debug("/api/v1/${setKey}/${url}")
-    log.debug "GET KEY : ${setKey}"
+//    log.debug "GET KEY : ${setKey}"
     
    	def result = new physicalgraph.device.HubAction(
             	method: "GET",
@@ -334,7 +334,7 @@ def receiveAPIkey(message) {
 
 	log.debug "MESSAGE : ${message}"
 	if(message.json) {
-    	log.debug "JSON ${message.json}"
+//    	log.debug "JSON ${message.json}"
 		def receivedKey = message.json.auth_token
         log.debug "KEY ${receivedKey}"
        	sendEvent(name: "retrievedAPIkey", value: "${receivedKey}")
