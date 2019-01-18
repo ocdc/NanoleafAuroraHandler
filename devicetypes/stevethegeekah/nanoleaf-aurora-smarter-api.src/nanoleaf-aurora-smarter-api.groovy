@@ -187,7 +187,8 @@ def parse(String description) {
       	}
 
     	} else {
-      		log.debug("Response from PUT, do nothing")
+      		log.debug("Response from PUT, refreshing")
+            refresh()
     	}
 }
 
@@ -247,7 +248,7 @@ def nextScene() {
 
 def changeScene(String scene) {
    	sendEvent(name: "scene", value: scene, isStateChange: true)
-    sendEvent(name: "switch", value: "on")
+    if(device.currentValue("switch") == "off") { sendEvent(name: "switch", value: "on") }
    	createPutRequest("effects", "{\"select\" : \"${scene}\"}")
 }
 
@@ -269,12 +270,14 @@ def setScene3() {
 def setLevel(Integer value) {
 	log.debug "LEVEL ${value}"
     sendEvent(name: "level", value: value, isStateChange: true)
+    if(device.currentValue("switch") == "off") { sendEvent(name: "switch", value: "on") }
 	createPutRequest("state", "{\"brightness\" : {\"value\" : ${value}}}")
 }
 
 def setColor(value) {
    	sendEvent(name: "scene", value: "--", isStateChange: true)
    	sendEvent(name: "color", value: value.hex, isStateChange: true)
+    if(device.currentValue("switch") == "off") { sendEvent(name: "switch", value: "on") }
    	createPutRequest("state", "{\"hue\" : ${(value.hue*360/100).toInteger()}, \"sat\" : ${value.saturation.toInteger()}}")
 }
 
