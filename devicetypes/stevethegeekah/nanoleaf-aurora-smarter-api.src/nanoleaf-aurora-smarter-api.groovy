@@ -17,15 +17,17 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Nanoleaf Aurora Smarter API", namespace: "SteveTheGeekAH", author: "Steve The Geek") {
-   		capability "Actuator"
-		capability "Light"
+	definition (name: "Nanoleaf Aurora Smarter API", namespace: "SteveTheGeekAH", author: "Steve The Geek, Melinda Little",
+    		mnmn:"SmartThings", vid: "generic-rgbw-color-bulb", ocfDeviceType: 'oic.d.light', cstHandler: true) {
+ 		capability "Actuator"
+//		capability "Light"
 		capability "Switch Level"
 		capability "Switch"
 		capability "Color Control"
-        	capability "Polling"
-        	capability "Refresh"
-		
+       	capability "Polling"
+       	capability "Refresh"
+		capability "Health Check"
+
 		command "previousScene"
 		command "nextScene"
 		command "changeScene" //for CoRE access to scenes
@@ -135,6 +137,11 @@ def updated() {
 }
 
 def initialize() {
+	
+    sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
+	sendEvent(name: "healthStatus", value: "online")
+	sendEvent(name: "DeviceWatch-Enroll", value: "{\"protocol\": \"LAN\", \"scheme\":\"untracked\", \"hubHardwareId\": \"${device.hub.hardwareID}\"}", displayed: false)
+    
 	def displayText
     if (inputIP) {
     	def hexID = setNetworkID()
@@ -150,11 +157,21 @@ def initialize() {
 
 }
 
+def ping() {
+
+	refresh()
+	return 1
+}
+
 def parse(String description) {
 
     	def message = parseLanMessage(description)
 //		log.debug "IN PARSE ${message}"
     	if(message.json) {
+        
+        	sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
+		    sendEvent(name: "healthStatus", value: "online")
+            
       		def auroraOn = message.json.state.on.value
       
       		if(auroraOn && device.currentValue("switch") == "off") {
@@ -278,7 +295,7 @@ def setColor(value) {
    	sendEvent(name: "scene", value: "--", isStateChange: true)
    	sendEvent(name: "color", value: value.hex, isStateChange: true)
     if(device.currentValue("switch") == "off") { sendEvent(name: "switch", value: "on") }
-   	createPutRequest("state", "{\"hue\" : ${(value.hue*360/100).toInteger()}, \"sat\" : ${value.saturation.toInteger()}}")
+   	createPutRequest("state", "{\"hue\" : {\"value\": ${(value.hue*360/100).toInteger()}}, \"sat\" : {\"value\": ${value.saturation.toInteger()}}}")
 }
 
 // gets the address of the hub
@@ -353,15 +370,16 @@ def receiveAPIkey(message) {
 def setKeyStatus() {
 
     def keyStatus
+    def health
 	if (device.currentValue("retrievedAPIkey")) {
     	keyStatus = "API Key Retrieved"
     }
     else if (apiKey) {
-    	keyStatus = "API Key Was Entered"    
+    	keyStatus = "API Key Was Entered"
     } 
     else {
     	keyStatus = "No API Key Found"    
-    }
+	}
 	sendEvent(name: "apiKeyStatus", value: keyStatus)
 
 }
