@@ -3,6 +3,8 @@ Smartthings device handler for the Nanoleaf Aurora and Canvas Devices
 
 ## Introduction
 
+Updated March 2020 by Melinda Little
+
 January 2019 by Melinda Little
 
 This is a fork of Steve the Geek's and Logan Fraser's original code for the Nanoleaf devices.  It updates the code to fix broken commands, add regular device refresh, calculate and display the HEX IP:PORT value for the device network id, and retrieve the API key within the device.  See instllation instructions below for details.
@@ -11,6 +13,22 @@ This code should not require a device recreation for those using existing code. 
 
 I do not have Hubitat or use IFTTT so those device handlers are unchanged by me, so I have removed them from this repository.  This repository is set up for GitHub integration with Smartthings.
 
+## March 2020 Changes
+
+Changes made to attempt to improve new app support, especially since official device support is not working well or at all.
+
+New function - Set individual panel colors.  This new command will allow webcore and smartapps to set individual panel colors are needed, such as for notification purposes.  This should work well with the new Nanoleaf layers in scenes.  Command details are
+
+   setPanelColor(panelId, Color, blink)
+   
+   panelId is the Nanoleaf assigned panelId.  The new managment smartapp can assist with determining this
+   Color is the color to set the panel.  Standard color names of black, white, red, blue, green, yellow, pink, orange, purple are predefined.  Any other color can be set using the #xxxxxx hex color definition.  The # must be the first character and the remaining characters must be a vaild hex color with a length of 6.
+   blink is true or false, false is the default if omitted.  This will determine if your panel will blink between your desired color and black.
+   
+For example setPanelColor("123", "red", blink=true) will set panel 123 to red and blinking 
+   
+   One important note, for this to work correctly with your existing scene, the Scene Transistion setting for the device must be Off. This is found in the Nanoleaf app, under device settings, found in the top right corner of the Dashboard.
+
 
 ## Installation Instructions
 
@@ -18,7 +36,7 @@ I do not have Hubitat or use IFTTT so those device handlers are unchanged by me,
 
 2.  Once the device handler is installed, under the device tab in the IDE create a new device using this handler.
 
-3.  Find the IP address for your Nanoleaf.  I have taken the simple route of hard coding the port information, so you do not need to figure that out.  If you are reassigning ports then you should have no trouble changing the code, lines 141, 381, and 406.
+3.  Find the IP address for your Nanoleaf.  I have taken the simple route of hard coding the port information, so you do not need to figure that out.  If you are reassigning ports then you should have no trouble changing the code, lines 153, 512, and 537.
 
 4.  You can now continue to manually calculate the HEX values of IP:PORT as described in the forum entry, or you can enter the IP address value in the device settings preferences.  Once you save the settings the device will display the HEX information that you need.
 
@@ -30,7 +48,7 @@ You should now be ready to use your device to control your Nanoleaf.
 
 ## Additional Information
 
-The device will refresh the status information from the device every 5 minutes.  For faster or slower rates, change line 196.
+The device will refresh the status information from the device every 5 minutes.  For faster or slower rates, change line 231.
 
 There are now two additional information tiles for the device.  
 
