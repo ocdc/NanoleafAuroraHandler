@@ -1,7 +1,7 @@
 /**
  *  
  *
- *  Updated January 2019 by Melinda Little to fix and expand functions.  Orignal code by Steve The Geek with updates from others.
+ *  Updated March 2020 by Melinda Little to fix and expand functions.  Orignal code by Steve The Geek with updates from others.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -17,8 +17,8 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Nanoleaf Aurora Smarter API", namespace: "SteveTheGeekAH", author: "Steve The Geek, Melinda Little",
-    		mnmn:"SmartThings", vid: "generic-rgbw-color-bulb", ocfDeviceType: 'oic.d.light', cstHandler: true) {
+	definition (name: "Nanoleaf Aurora Smarter API", namespace: "SteveTheGeekAH", author: "Steve The Geek, Melinda Little" /*,
+    		mnmn:"SmartThings", vid: "generic-rgbw-color-bulb", ocfDeviceType: 'oic.d.light' */) {
  		capability "Actuator"
 //		capability "Light"
 		capability "Switch Level"
@@ -26,6 +26,7 @@ metadata {
 		capability "Color Control"
        	capability "Polling"
        	capability "Refresh"
+        capability "Media Presets"
 		capability "Health Check"
 
 		command "previousScene"
@@ -35,6 +36,9 @@ metadata {
 		command "setScene2"
 		command "setScene3"	
         command "requestAPIkey"
+        command "clearApiKey"
+        command "setPanelColor"
+        command "playPreset"
             
 		attribute "scene", "string"
 		attribute "scenesList", "string"
@@ -42,6 +46,7 @@ metadata {
         attribute "retrievedAPIkey", "string"
         attribute "apiKeyStatus", "string"
         attribute "clearKey", "string"
+        attribute "panelIds", "string"
 	}
 
 	simulator {
@@ -197,11 +202,23 @@ def parse(String description) {
          	sendEvent(name: "level", value: currentBrightness, isStateChange: true)
       	}
       
-      	def effectsList = message.json.effects.effectsList
+      	def effectsList = message.json.effects.effectsList ?: []
    		if(effectsList.toString() != device.currentValue("scenesList").toString()) {
          	log.debug("List of effects was changed in the Aurora App")
          	sendEvent(name: "scenesList", value: effectsList, isStateChange: true)
       	}
+        def favsList = []
+	    if (effectsList.size() > 0) {
+    		for (int i = 0; i < effectsList.size();i++) {
+	    		favsList[i] = "{\"id\":\"${i}\",\"name\":\"${effectsList[i]}\"}"
+    		}
+      	}
+		sendEvent(name: "presets", value: favsList, display: false)
+
+//  Save panelid Info
+		sendEvent(name: "panelIds", value: message.json.panelLayout.layout.positionData.panelId.join(","), display: false)        
+//		log.debug message.json.panelLayout.layout.positionData.panelId
+
 
     	} else {
       		log.debug("Response from PUT, refreshing")
@@ -296,6 +313,98 @@ def setColor(value) {
    	sendEvent(name: "color", value: value.hex, isStateChange: true)
     if(device.currentValue("switch") == "off") { sendEvent(name: "switch", value: "on") }
    	createPutRequest("state", "{\"hue\" : {\"value\": ${(value.hue*360/100).toInteger()}}, \"sat\" : {\"value\": ${value.saturation.toInteger()}}}")
+}
+
+def setPanelColor(panel, toColor, blink=false) {
+	def RBG = codeColor(toColor)
+    log.debug RBG
+    if (RBG?.red !=null) {
+    	def numFrames = (blink) ? 2 : 1 
+    	def loopVal = (blink) ? "true" : "false" 
+    	def animType = (blink) ? "custom" : "static"
+        def firstFrame = "${RBG.red.toInteger()} ${RBG.green.toInteger()} ${RBG.blue.toInteger()} 0 15"
+    	def secondFrame = (blink) ? " 0 0 0 0 5" : "" 
+        def animData = "1 ${panel} ${numFrames} ${firstFrame}${secondFrame}"
+//        log.debug animData
+        def jsonCmd = "{\"write\": {\"command\":\"display\",\"animType\":\"${animType}\",\"animData\":\"${animData}\",\"loop\":${loopVal}}}"
+//        log.debug jsonCmd
+        createPutRequest("effects", jsonCmd)
+    }
+    else {log.error "Bad Panel Color Received : ${toColor}"}
+}
+
+def codeColor(toColor) {
+    def RBG =[:]
+    if (toColor.startsWith("#")) {
+    	if (toColor.length() == 7) {
+    		RBG.red = convertHexToInt(toColor[1..2])
+    		RBG.green = convertHexToInt(toColor[3..4])    
+       		RBG.blue = convertHexToInt(toColor[5..6])
+        }
+        else {
+        	log.error "Bad Panel Color Received : ${toColor}. Defaulted to White"
+            RBG.red = "255"
+        	RBG.green = "255"
+            RBG.blue = "255"
+        }
+    } 
+    else if (toColor.equalsIgnoreCase("Red")) {
+        	RBG.red = "255"
+        	RBG.green = "0"
+            RBG.blue = "0"
+        }
+    else if (toColor.equalsIgnoreCase("Blue")) {
+        	RBG.red = "0"
+        	RBG.green = "0"
+            RBG.blue = "255"
+        }
+    else if (toColor.equalsIgnoreCase("Green")) {
+        	RBG.red = "0"
+        	RBG.green = "255"
+            RBG.blue = "0"
+        }
+    else if (toColor.equalsIgnoreCase("Yellow")) {
+        	RBG.red = "255"
+        	RBG.green = "255"
+            RBG.blue = "0"
+        }
+    else if (toColor.equalsIgnoreCase("Black")) {
+        	RBG.red = "0"
+        	RBG.green = "0"
+            RBG.blue = "0"
+        } 
+    else if (toColor.equalsIgnoreCase("Orange")) {
+        	RBG.red = "255"
+        	RBG.green = "140"
+            RBG.blue = "0"
+        }   
+    else if (toColor.equalsIgnoreCase("Pink")) {
+        	RBG.red = "255"
+        	RBG.green = "105"
+            RBG.blue = "180"
+        }
+    else if (toColor.equalsIgnoreCase("Purple")) {
+        	RBG.red = "128"
+        	RBG.green = "0"
+            RBG.blue = "128"
+        }    
+    else {  // Color input is White or invalid and thus defaults to white
+        	RBG.red = "255"
+        	RBG.green = "255"
+            RBG.blue = "255"
+        }
+
+    
+    log.debug RBG
+    return RBG
+}
+
+def playPreset(presetId) {
+// 	log.debug "PRESET ${presetId}"
+
+    def favsList = new groovy.json.JsonSlurper().parseText(device.currentValue("presets"))
+    changeScene("${favsList.name[presetId.toInteger()]}")
+
 }
 
 // gets the address of the hub
