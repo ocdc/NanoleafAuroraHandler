@@ -21,9 +21,11 @@ New function - Set individual panel colors.  This new command will allow webcore
 
    setPanelColor(panelId, Color, blink)
    
-   panelId is the Nanoleaf assigned panelId.  The new managment smartapp can assist with determining this
-   Color is the color to set the panel.  Standard color names of black, white, red, blue, green, yellow, pink, orange, purple are predefined.  Any other color can be set using the #xxxxxx hex color definition.  The # must be the first character and the remaining characters must be a vaild hex color with a length of 6.
-   blink is true or false, false is the default if omitted.  This will determine if your panel will blink between your desired color and black.
+panelId is the Nanoleaf assigned panelId.  The new managment smartapp can assist with determining this
+
+Color is the color to set the panel.  Standard color names of black, white, red, blue, green, yellow, pink, orange, purple are predefined.  Any other color can be set using the #xxxxxx hex color definition.  The # must be the first character and the remaining characters must be a vaild hex color with a length of 6.
+
+Blink is true or false, false is the default if omitted.  This will determine if your panel will blink between your desired color and black.
    
 For example setPanelColor("123", "red", blink=true) will set panel 123 to red and blinking 
    
